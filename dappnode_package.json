@@ -1,0 +1,28 @@
+{
+  "name": "obol.avado.dappnode.eth",
+  "version": "0.0.1",
+  "upstream": "v0.15.0",
+  "autoupdate": true,
+  "title": "Obol DVT",
+  "description": "Distributed Validators for Ethereum",
+  "avatar": "/ipfs/Qmev9gs37Jmzwt4DDT1Yk26vEbN4mWMP9DX5RcXBy6kjTi",
+  "type": "service",
+  "image": {
+    "environment": [
+      "EXTRA_OPTS="
+    ],
+    "volumes": [
+      "data:/data"
+    ],
+    "restart": "always",
+    "ports": [
+      "3610:3610"
+    ]
+  },
+  "author": "AVADO",
+  "license": "GLP-3.0",
+  "links": {
+    "Github": "https://github.com/AvadoDServer/AVADO-DNP-Obol",
+    "OnboardingWizard": "http://obol.my.ava.do"
+  }
+}

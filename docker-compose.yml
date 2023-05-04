@@ -1,0 +1,20 @@
+version: '3.4'
+services:
+  obol.avado.dappnode.eth:
+    build:
+      context: build
+      args:
+        UPSTREAM_VERSION: v0.15.0
+        NIMBUS_VERSION: v23.3.2
+        TEKU_VERSION: 23.4.0
+    image: 'obol.avado.dappnode.eth:0.0.1'
+    restart: always
+    volumes:
+      - 'data:/data'
+    ports:
+      - '3610:3610'
+      - '9999:9999'
+      - '80:80'
+      - '5052:5052'
+volumes:
+  data: {}

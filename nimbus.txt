@@ -1,0 +1,41 @@
+Nimbus validator client v23.3.2-6c0d75-stateofus
+
+Usage: 
+
+nimbus_validator_client [OPTIONS]...
+
+The following options are available:
+
+     --config-file             Loads the configuration from a TOML file.
+     --log-level               Sets the log level [=INFO].
+     --log-file                Specifies a path for the written Json log file (deprecated).
+ -d, --data-dir                The directory where nimbus will store all blockchain data.
+     --doppelganger-detection  If enabled, the validator client prudently listens for 2 epochs for attestations
+                               from a validator with the same index (a doppelganger), before sending an
+                               attestation itself. This protects against slashing (due to double-voting) but
+                               means you will miss two attestations when restarting. [=true].
+     --non-interactive         Do not display interative prompts. Quit on missing configuration.
+     --validators-dir          A directory containing validator keystores.
+     --secrets-dir             A directory containing validator keystore passwords.
+     --rest-request-timeout    The number of seconds to wait until complete REST request will be received
+                               [=infinite].
+     --rest-max-body-size      Maximum size of REST request body (kilobytes) [=16384].
+     --rest-max-headers-size   Maximum size of REST request headers (kilobytes) [=64].
+     --suggested-fee-recipient  Suggested fee recipient.
+     --suggested-gas-limit     Suggested gas limit [=30000000].
+     --keymanager              Enable the REST keymanager API [=false].
+     --keymanager-port         Listening port for the REST keymanager API [=5052].
+     --keymanager-address      Listening port for the REST keymanager API [=127.0.0.1].
+     --keymanager-allow-origin  Limit the access to the Keymanager API to a particular hostname (for
+                               CORS-enabled clients such as browsers).
+     --keymanager-token-file   A file specifying the authorizition token required for accessing the keymanager
+                               API.
+     --metrics                 Enable the metrics server (BETA) [=false].
+     --metrics-address         Listening address of the metrics server (BETA) [=127.0.0.1].
+     --metrics-port            Listening HTTP port of the metrics server (BETA) [=8108].
+     --graffiti                The graffiti value that will appear in proposed blocks. You can use a
+                               0x-prefixed hex encoded string to specify raw bytes.
+     --stop-at-epoch           A positive epoch selects the epoch at which to stop [=0].
+     --payload-builder         Enable usage of beacon node with external payload builder (BETA) [=false].
+     --beacon-node             URL addresses to one or more beacon node HTTP REST APIs
+                               [=$defaultBeaconNodeUri].
