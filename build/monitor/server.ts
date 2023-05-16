@@ -2,9 +2,8 @@ import * as restify from "restify";
 import corsMiddleware from "restify-cors-middleware2"
 import { SupervisorCtl } from "./SupervisorCtl";
 import { server_config } from "./server_config";
-import { rest_url, getAvadoPackageName, getAvadoExecutionClientPackageName, client_url } from "./urls";
+import { rest_url, getAvadoPackageName, getAvadoExecutionClientPackageName, client_url, supported_beacon_chain_clients, supported_execution_clients } from "./urls";
 import { DappManagerHelper } from "./DappManagerHelper";
-import { readFileSync } from "fs";
 import AdmZip from 'adm-zip';
 import { spawn } from 'child_process';
 import axios, { Method } from "axios";
@@ -14,10 +13,6 @@ import { execSync } from "child_process";
 const autobahn = require('autobahn');
 const exec = require("child_process").exec;
 const fs = require('fs');
-const jsonfile = require('jsonfile')
-
-const supported_beacon_chain_clients = ["prysm", "teku", "nimbus"];
-const supported_execution_clients = ["geth", "nethermind"];
 
 console.log("Monitor starting...");
 
@@ -34,6 +29,8 @@ const cors = corsMiddleware({
         "http://*.my.ava.do"
     ]
 });
+
+const DATADIR = "/data/charon"
 
 server.pre(cors.preflight);
 server.use(cors.actual);
@@ -134,16 +131,20 @@ server.get("/ec-clients", async (req: restify.Request, res: restify.Response, ne
     next();
 })
 
-server.get("/enr", async (req: restify.Request, res: restify.Response, next: restify.Next) => {
-    const enr = fs.readFileSync(`/data/charon/charon-enr`, 'utf8').trim();
-    res.send(200, enr)
-    next();
+server.get("/enr", (req: restify.Request, res: restify.Response, next: restify.Next) => {
+    charonCommand(`enr --data-dir="${DATADIR}"`).then((stdout) => {
+        res.send(200, stdout);
+        return next();
+    }).catch((e) => {
+        res.send(500, e);
+        return next();
+    })
+
 })
 
-server.get("/cluster-lock.json", async (req: restify.Request, res: restify.Response, next: restify.Next) => {
-    const clusterLockFile = `/data/charon/cluster-lock.json`;
+server.get("/cluster-lock.json", (req: restify.Request, res: restify.Response, next: restify.Next) => {
     try {
-        const result = JSON.parse(fs.readFileSync(clusterLockFile, 'utf8'))
+        const result = JSON.parse(fs.readFileSync(`${DATADIR}/cluster-lock.json`, 'utf8'))
         res.send(200, result);
         return next()
     } catch (err) {
@@ -153,8 +154,8 @@ server.get("/cluster-lock.json", async (req: restify.Request, res: restify.Respo
     }
 })
 
-server.get("/logs-validator", async (req: restify.Request, res: restify.Response, next: restify.Next) => {
-    const logFile = "/data/data-prater/logs/teku-validator.log"
+server.get("/logs-validator", (req: restify.Request, res: restify.Response, next: restify.Next) => {
+    const logFile = `${server_config.validator_path}/logs/teku-validator.log`
     try {
         const log = fs.readFileSync(logFile, 'utf8').trim();
         res.send(200, log)
@@ -213,12 +214,7 @@ server.post('/runDkg', async (req: restify.Request, res: restify.Response, next:
         fs.renameSync(jsonFile.path, clusterConfigFilePath, (err: any) => { if (err) console.log('ERROR: ' + err) });
         console.log(`received cluster config file "${jsonFile.name}"`);
         try {
-            const dataDir = `/data/charon`;
-            // for easier testing
-            const realPath = await fs.promises.realpath(dataDir)
-            console.log("real path?", realPath)
-
-            const command = `/usr/local/bin/charon dkg --data-dir="${realPath}" --log-level=debug --definition-file="${clusterConfigFilePath}" --publish`
+            const command = `/usr/local/bin/charon dkg --data-dir="${DATADIR}" --log-level=debug --definition-file="${clusterConfigFilePath}" --publish`
             console.log("Running:", command)
 
             const child = spawn(command, { shell: true });
@@ -267,7 +263,7 @@ server.get("/" + backupFileName, (req: restify.Request, res: restify.Response, n
     res.setHeader("Content-Disposition", "attachment; " + backupFileName);
     res.setHeader("Content-Type", "application/zip");
     const zip = new AdmZip();
-    zip.addLocalFolder("/data/charon/", "charon");
+    zip.addLocalFolder(DATADIR, "charon");
     zip.toBuffer(
         (buffer: Buffer) => {
             res.setHeader("Content-Length", buffer.length);
@@ -296,7 +292,7 @@ server.post('/restore-backup', (req: restify.Request, res: restify.Response, nex
         validateZipFile(zipfilePath);
 
         // delete existing data folder (if it exists)
-        fs.rmSync("/data/charon", { recursive: true, force: true /* ignore if not exists */ });
+        fs.rmSync(DATADIR, { recursive: true, force: true /* ignore if not exists */ });
 
         // unzip
         const zip = new AdmZip(zipfilePath);
@@ -325,7 +321,6 @@ server.post('/restore-backup', (req: restify.Request, res: restify.Response, nex
         const zip = new AdmZip(zipfilePath);
         const zipEntries = zip.getEntries();
 
-        checkFileExistsInZipFile(zipEntries, "charon/charon-enr")
         checkFileExistsInZipFile(zipEntries, "charon/charon-enr-private-key")
     }
 
@@ -365,20 +360,14 @@ server.get('/rest/*', async (req: restify.Request, res: restify.Response, next: 
 // EXIT validator    ///
 ////////////////////////
 
-server.post("/exit_validator/:pubkey", async (req: restify.Request, res: restify.Response, next: restify.Next) => {
-    const pubkey = req.params?.pubkey
-
-    if (!pubkey) {
-        res.send(500, "missing pubkey")
-        next();
-    }
+server.post("/exit_validators/", (req: restify.Request, res: restify.Response, next: restify.Next) => {
 
     console.log(`!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!`)
-    console.log(`Sending exit message for validator ${pubkey}`)
+    console.log(`Sending exit message for validators`)
     console.log(`!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!`)
 
     const teku = "/opt/teku/bin/teku"
-    const fixed_opts = `--beacon-node-api-endpoint=http://127.0.0.1:3600 --confirmation-enabled=false --validator-keys="/data/charon/validator_keys:/data/charon/validator_keys"`
+    const fixed_opts = `--beacon-node-api-endpoint=http://127.0.0.1:3600 --confirmation-enabled=false --validator-keys="${DATADIR}/validator_keys:/${DATADIR}/validator_keys"`
     // const cmd = `${teku} voluntary-exit --validator-public-keys="${pubkey}" ${fixed_opts}`
     const cmd = `${teku} voluntary-exit ${fixed_opts}`
 

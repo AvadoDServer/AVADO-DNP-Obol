@@ -9,24 +9,24 @@ import React, { Fragment, useEffect, useState } from "react";
 import { ExclamationTriangleIcon, XMarkIcon } from '@heroicons/react/24/outline'
 
 interface Props {
-    validator: ValidatorData
+    validators: ValidatorData[]
     updateValidators: () => void
 }
 
 
-const ExitValidatorModal = ({ validator, updateValidators }: Props) => {
+const ExitValidatorModal = ({ validators, updateValidators }: Props) => {
     const { network } = useNetwork()
 
     const [showModal, setShowModal] = useState(false);
     const [confirmation, setConfirmation] = useState('');
 
-    const exitValidator = () => {
-        const pubKey = validator.validator.pubkey
-        console.log("Exiting " + pubKey);
+    const exitValidators = () => {
+        const pubKeys = validators.map(v => v.validator.pubkey)
+        console.log("Exiting " + pubKeys.join(","));
 
         setShowModal(false)
 
-        fetch(`${server_config.monitor_url}/exit_validator/${pubKey}`, { method: 'POST' })
+        fetch(`${server_config.monitor_url}/exit_validators/`, { method: 'POST' })
             .then(async (res: any) => {
                 const data = await res.json()
                 console.log(data, res)
@@ -60,13 +60,15 @@ const ExitValidatorModal = ({ validator, updateValidators }: Props) => {
             <div className="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow">
                 <div className="px-4 py-5 sm:px-6">
                     <h2 className="text-xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-                        Exit validator {validator.index} ?
+                        Exit validators {validators.map(v => v.index).join(",")} ?
                     </h2>
                 </div>
                 <div className="px-4 py-5 sm:p-6">
                     <h4 className="title is-4 has-text-white">
-                        Are you sure you want to exit validator
-                        {beaconchainUrl(network, "/validator/" + validator.validator.pubkey, <><code>{abbreviatePublicKey(validator.validator.pubkey)}</code> <FontAwesomeIcon className="icon" icon={faSatelliteDish} /></>)}
+                        Are you sure you want to exit validators
+                        {validators.map(validator => <>
+                            {beaconchainUrl(network, "/validator/" + validator.validator.pubkey, <><code>{abbreviatePublicKey(validator.validator.pubkey)}</code> <FontAwesomeIcon className="icon" icon={faSatelliteDish} /></>)}
+                        </>).join(", ")}
                         ?
                     </h4>
 
@@ -98,8 +100,8 @@ const ExitValidatorModal = ({ validator, updateValidators }: Props) => {
 
                     <button
                         className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                        disabled={confirmation !== "agree"} onClick={exitValidator}>
-                        Exit validator
+                        disabled={confirmation !== "agree"} onClick={exitValidators}>
+                        Exit validators
                     </button>
 
 
@@ -121,7 +123,7 @@ const ExitValidatorModal = ({ validator, updateValidators }: Props) => {
             <button
                 className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 onClick={() => setShowModal(!showModal)}
-            >Exit validator</button>
+            >Exit validators</button>
         )}
         {showModal && (
             <>

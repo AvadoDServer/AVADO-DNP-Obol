@@ -8,10 +8,12 @@ const network = () => {
     return env_network
 }
 
+const validator_data_path = `/data/data-${network().replace("goerli", "prater")}`
 export const server_config = {
     network: network(),
     name: "obol",
-    keymanager_token_path: `/data/data-${network().replace("goerli", "prater")}/validator/key-manager/validator-api-bearer`,
+    keymanager_token_path: `${validator_data_path}/validator/key-manager/validator-api-bearer`,
+    validator_path: validator_data_path,
     https_options: localdev ? {} : {
         key: readFileSync('/etc/nginx/my.ava.do.key'),
         certificate: readFileSync('/etc/nginx/my.ava.do.crt')

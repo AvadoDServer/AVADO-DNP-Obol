@@ -3,10 +3,7 @@ import type { NextPage } from 'next';
 import CharonCommandField from '../components/ObolCommandField'
 import DownloadBackup from '../components/DownloadBackup';
 import { server_config } from "../server_config"
-import { useEffect, useState } from 'react';
-import { etherscanAddressUrl, etherscanTransactionUrl } from '../utils/utils';
 import { useNetwork } from '../hooks/useServerInfo';
-import LogsValidator from '../components/LogsValidator';
 import SupervisorStatus from '../components/SupervisorStatus';
 import RestoreBackup from '../components/RestoreBackup';
 

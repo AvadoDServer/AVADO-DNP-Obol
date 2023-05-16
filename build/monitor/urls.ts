@@ -2,6 +2,9 @@ import { server_config } from "./server_config";
 
 const network = server_config.network
 
+export const supported_beacon_chain_clients = ["prysm", "teku", "nimbus"];
+export const supported_execution_clients = ["geth", "nethermind"];
+
 export const client_url = (client: string) => {
     switch (client) {
         case "prysm": switch (network) {

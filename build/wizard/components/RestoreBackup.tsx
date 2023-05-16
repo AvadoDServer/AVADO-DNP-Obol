@@ -1,7 +1,6 @@
 import { useNetwork } from "../hooks/useServerInfo";
 import { useDropzone } from "react-dropzone";
 import { useCallback, useState } from "react";
-import { clusterDefinitionType } from "../lib/ClusterDefition";
 import { server_config } from "../server_config";
 import Router from "next/router";
 
