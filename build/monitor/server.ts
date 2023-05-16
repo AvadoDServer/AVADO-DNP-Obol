@@ -360,16 +360,10 @@ server.get('/rest/*', async (req: restify.Request, res: restify.Response, next: 
 // EXIT validator    ///
 ////////////////////////
 
-server.post("/exit_validator/:pubkey", (req: restify.Request, res: restify.Response, next: restify.Next) => {
-    const pubkey = req.params?.pubkey
-
-    if (!pubkey) {
-        res.send(500, "missing pubkey")
-        next();
-    }
+server.post("/exit_validators/", (req: restify.Request, res: restify.Response, next: restify.Next) => {
 
     console.log(`!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!`)
-    console.log(`Sending exit message for validator ${pubkey}`)
+    console.log(`Sending exit message for validators`)
     console.log(`!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!`)
 
     const teku = "/opt/teku/bin/teku"
