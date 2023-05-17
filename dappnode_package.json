@@ -1,6 +1,6 @@
 {
   "name": "obol.avado.dappnode.eth",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "upstream": "v0.15.0",
   "autoupdate": true,
   "title": "Obol DVT",
@@ -9,6 +9,7 @@
   "type": "service",
   "image": {
     "environment": [
+      "NETWORK=goerli",
       "EXTRA_OPTS="
     ],
     "volumes": [
