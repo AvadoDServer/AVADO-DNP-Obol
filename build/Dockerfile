@@ -35,7 +35,8 @@ COPY --from=teku /opt/teku/ /opt/teku/
 RUN mkdir -p /etc/ssl/certs/java
 
 RUN apt-get -y clean && apt-get -y update && apt-get -y upgrade && apt-get -y install \
-    ca-certificates-java \
+    ca-certificates-java 
+RUN apt-get -y install \
     openjdk-17-jre-headless \
     gettext\
     jq \
