@@ -32,6 +32,8 @@ COPY --from=charon /usr/local/bin/charon /usr/local/bin/charon
 # COPY --from=nimbus-vc /home/user/nimbus_validator_client /usr/local/bin/nimbus_validator_client
 COPY --from=teku /opt/teku/ /opt/teku/
 
+RUN mkdir -p /etc/ssl/certs/java
+
 RUN apt-get -y clean && apt-get -y update && apt-get -y upgrade && apt-get -y install \
     ca-certificates-java \
     openjdk-17-jre-headless \
