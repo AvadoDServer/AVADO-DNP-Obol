@@ -26,7 +26,7 @@ const RestoreBackup = ({ onFinish }: Props) => {
             });
 
             if (response.ok) {
-                Router.reload();
+                setFeedback((await response.json()).message || "Backup restored");
             } else {
                 setFeedback(response.statusText)
             }

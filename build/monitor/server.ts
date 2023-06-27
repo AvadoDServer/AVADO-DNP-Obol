@@ -276,7 +276,12 @@ server.get("/" + backupFileName, (req: restify.Request, res: restify.Response, n
 /////////////////////////////
 // Restore backup          //
 /////////////////////////////
-server.post('/restore-backup', (req: restify.Request, res: restify.Response, next: restify.Next) => {
+const requiredZipFiles = [
+    "charon-enr",
+    "charon-enr-private-key"
+];
+
+server.post('/restore-backup', async (req: restify.Request, res: restify.Response, next: restify.Next) => {
     console.log("upload backup zip file");
     const backupFile = req?.files?.backupFile;
     if (!backupFile) {
@@ -289,21 +294,33 @@ server.post('/restore-backup', (req: restify.Request, res: restify.Response, nex
     fs.renameSync(backupFile.path, zipfilePath, (err: any) => { if (err) console.log('ERROR: ' + err) });
     console.log("received backup file " + backupFile.name);
     try {
+
         validateZipFile(zipfilePath);
 
         // delete existing data folder (if it exists)
         fs.rmSync(DATADIR, { recursive: true, force: true /* ignore if not exists */ });
+        fs.rmSync("/tmp/data", { recursive: true, force: true /* ignore if not exists */ });
 
-        // unzip
-        const zip = new AdmZip(zipfilePath);
-        zip.extractAllTo("/data/", /*overwrite*/ true);
+        var z = new AdmZip(zipfilePath);
+        var zipEntries = z.getEntries(); // an array of ZipEntry records
+        var extractedFiles: string[] = [];
+
+        zipEntries.forEach(function (zipEntry) {
+            if (requiredZipFiles.includes(zipEntry.name)) {
+                console.log(`extract ${zipEntry.name} to ${DATADIR}/${zipEntry.name}`);
+                z.extractEntryTo(/*entry name*/ zipEntry.entryName, /*target path*/ DATADIR, /*maintainEntryPath*/ false, /*overwrite*/ true);
+                extractedFiles.push(zipEntry.name)
+            } else {
+                console.log(`ignoring ${zipEntry.entryName}`);
+            }
+        });
 
         restart("teku")
         restart("charon")
 
         res.send({
             code: 200,
-            message: "Successfully uploaded the Charon backup.",
+            message: `Successfully uploaded the Charon backup. Restored ${extractedFiles.map((f) => { return `${f} ` })} to folder ${DATADIR} and restarted Charon+Teku.`,
         });
         return next();
     } catch (e) {
@@ -320,12 +337,14 @@ server.post('/restore-backup', (req: restify.Request, res: restify.Response, nex
         console.log("Validating " + zipfilePath);
         const zip = new AdmZip(zipfilePath);
         const zipEntries = zip.getEntries();
-
-        checkFileExistsInZipFile(zipEntries, "charon/charon-enr-private-key")
+        requiredZipFiles.forEach(fileName => {
+            checkFileExistsInZipFile(zipEntries, fileName)
+        });
+        console.log(`Zipfile OK`);
     }
 
     function checkFileExistsInZipFile(zipEntries: AdmZip.IZipEntry[], expectedPath: string) {
-        const containsFile = zipEntries.some((entry) => entry.entryName == expectedPath);
+        const containsFile = zipEntries.some((entry) => entry.name == expectedPath);
         if (!containsFile)
             throw new Error(`Invalid backup file. The zip file must contain "${expectedPath}"`)
     }
