@@ -1,7 +1,7 @@
 {
   "name": "obol.avado.dappnode.eth",
-  "version": "0.0.3",
-  "upstream": "v0.15.0",
+  "version": "0.0.4",
+  "upstream": "v0.16.0",
   "autoupdate": true,
   "title": "Obol DVT",
   "description": "Distributed Validators for Ethereum",
@@ -17,7 +17,8 @@
     ],
     "restart": "always",
     "ports": [
-      "3610:3610"
+      "3610:3610",
+      "3620"
     ]
   },
   "author": "AVADO",

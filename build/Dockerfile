@@ -32,14 +32,18 @@ COPY --from=charon /usr/local/bin/charon /usr/local/bin/charon
 # COPY --from=nimbus-vc /home/user/nimbus_validator_client /usr/local/bin/nimbus_validator_client
 COPY --from=teku /opt/teku/ /opt/teku/
 
+RUN mkdir -p /etc/ssl/certs/java
+
 RUN apt-get -y clean && apt-get -y update && apt-get -y upgrade && apt-get -y install \
+    ca-certificates-java 
+RUN apt-get -y install \
+    openjdk-17-jre-headless \
     gettext\
     jq \
     nginx \
     sudo \
     supervisor \
     vim-tiny \
-    openjdk-17-jre-headless \
     && rm -rf /var/lib/apt/lists/*
 
 RUN curl "https://iso.ava.do/my.ava.do.crt" --output /etc/nginx/my.ava.do.crt --silent

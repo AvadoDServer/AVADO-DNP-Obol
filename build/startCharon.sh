@@ -28,4 +28,4 @@ until [ -f ${CLUSTER_LOCK} ]; do
     sleep 30
 done
 
-/usr/local/bin/charon run --lock-file ${CLUSTER_LOCK} --private-key-file=${PRIVATE_KEY_FILE} --beacon-node-endpoints=${CHARON_BEACON_NODE_ENDPOINTS}
+/usr/local/bin/charon run --lock-file ${CLUSTER_LOCK} --private-key-file=${PRIVATE_KEY_FILE} --beacon-node-endpoints=${CHARON_BEACON_NODE_ENDPOINTS} --monitoring-address=${CHARON_MONITORING_ADDRESS}
