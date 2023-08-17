@@ -62,6 +62,8 @@ COPY --from=builder /usr/src/monitor/ /usr/local/monitor
 COPY startCharon.sh /
 COPY startNimbus.sh /
 COPY startTeku.sh /
+COPY reload-certs.sh /
+RUN chmod +x /reload-certs.sh
 RUN chmod a+x /startCharon.sh /startNimbus.sh /startTeku.sh
 
 
