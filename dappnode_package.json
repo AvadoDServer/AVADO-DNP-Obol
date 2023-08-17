@@ -1,6 +1,6 @@
 {
   "name": "obol.avado.dappnode.eth",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "upstream": "v0.16.0",
   "autoupdate": true,
   "title": "Obol DVT",
@@ -17,6 +17,9 @@
     ],
     "restart": "always",
     "ports": [
+      "9999:9999",
+      "80",
+      "5052",
       "3610:3610",
       "3620"
     ]
