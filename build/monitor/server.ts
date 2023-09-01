@@ -2,7 +2,7 @@ import * as restify from "restify";
 import corsMiddleware from "restify-cors-middleware2"
 import { SupervisorCtl } from "./SupervisorCtl";
 import { server_config } from "./server_config";
-import { rest_url, getAvadoPackageName, getAvadoExecutionClientPackageName, client_url, supported_beacon_chain_clients, supported_execution_clients } from "./urls";
+import { rest_url, getAvadoBeaconChainPackageName, getAvadoExecutionClientPackageName, ec_client_url, bc_client_url, vc_client_url, supported_beacon_chain_clients, supported_execution_clients } from "./urls";
 import { DappManagerHelper } from "./DappManagerHelper";
 import AdmZip from 'adm-zip';
 import { spawn } from 'child_process';
@@ -100,22 +100,22 @@ let wampSession: any = null;
     connection.open();
 }
 
-const getInstalledClients = async () => {
+const getInstalledBeaconChainClients = async () => {
     const dappManagerHelper = new DappManagerHelper(server_config.packageName, wampSession);
     const packages = await dappManagerHelper.getPackages();
 
     const installed_clients = supported_beacon_chain_clients
-        .filter(client => (packages.includes(getAvadoPackageName(client, "beaconchain"))))
+        .filter(client => (packages.includes(getAvadoBeaconChainPackageName(client))))
         .map(client => ({
             name: client,
-            url: `http://${client_url(client)}`,
-            validatorAPI: `http://${client_url(client)}:9999/keymanager`
+            url: `http://${bc_client_url(client)}`,
+            validatorAPI: `http://${vc_client_url(client)}:9999/keymanager`
         }))
     return installed_clients;
 }
 
 server.get("/bc-clients", async (req: restify.Request, res: restify.Response, next: restify.Next) => {
-    res.send(200, await getInstalledClients())
+    res.send(200, await getInstalledBeaconChainClients())
     next();
 })
 
@@ -128,7 +128,7 @@ server.get("/ec-clients", async (req: restify.Request, res: restify.Response, ne
     res.send(200, installed_clients.map(client => ({
         name: client,
         api: rest_url(client),
-        url: `http://${client_url(client)}`
+        url: `http://${ec_client_url(client)}`
     })))
     next();
 })
@@ -451,7 +451,7 @@ server.post('/restore-backup', async (req: restify.Request, res: restify.Respons
 server.get('/rest/*', async (req: restify.Request, res: restify.Response, next: restify.Next) => {
     const path = req.params["*"]
 
-    const bcClients = await getInstalledClients()
+    const bcClients = await getInstalledBeaconChainClients()
     if (bcClients.length > 0) {
         const bcClient = bcClients[0]
         const beaconNodeAddr = rest_url(bcClient.name);
