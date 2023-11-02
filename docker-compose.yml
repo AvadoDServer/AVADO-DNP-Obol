@@ -6,8 +6,8 @@ services:
       args:
         UPSTREAM_VERSION: v0.17.0
         NIMBUS_VERSION: v23.8.0
-        TEKU_VERSION: 23.8.0
-    image: 'obol.avado.dappnode.eth:0.0.7'
+        TEKU_VERSION: 23.10.0
+    image: 'obol.avado.dappnode.eth:0.0.8'
     restart: always
     volumes:
       - 'data:/data'
