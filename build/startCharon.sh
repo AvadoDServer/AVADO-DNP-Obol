@@ -12,7 +12,7 @@ if [ ! -f ${PRIVATE_KEY_FILE} ]; then
     /usr/local/bin/charon --data-dir=${DATA_DIR} enr >${DATA_DIR}/charon-enr
 fi
 
-CHARON_BEACON_NODE_ENDPOINTS="http://prysm-beacon-chain-prater.my.ava.do:3500,http://teku-prater.my.ava.do:5051,http://nimbus-prater.my.ava.do:5052"
+CHARON_BEACON_NODE_ENDPOINTS="http://teku.my.ava.do:5051"
 
 export CHARON_LOG_LEVEL=${CHARON_LOG_LEVEL:-info}
 export CHARON_LOG_FORMAT=${CHARON_LOG_FORMAT:-console}
@@ -28,4 +28,6 @@ until [ -f ${CLUSTER_LOCK} ]; do
     sleep 30
 done
 
-/usr/local/bin/charon run --lock-file ${CLUSTER_LOCK} --private-key-file=${PRIVATE_KEY_FILE} --beacon-node-endpoints=${CHARON_BEACON_NODE_ENDPOINTS} --monitoring-address=${CHARON_MONITORING_ADDRESS}
+echo "Running: /usr/local/bin/charon run --lock-file=${CLUSTER_LOCK} --private-key-file=${PRIVATE_KEY_FILE} --beacon-node-endpoints=${CHARON_BEACON_NODE_ENDPOINTS} --monitoring-address=${CHARON_MONITORING_ADDRESS}  --builder-api"
+
+/usr/local/bin/charon run --lock-file=${CLUSTER_LOCK} --private-key-file=${PRIVATE_KEY_FILE} --beacon-node-endpoints=${CHARON_BEACON_NODE_ENDPOINTS} --monitoring-address=${CHARON_MONITORING_ADDRESS}  --builder-api
