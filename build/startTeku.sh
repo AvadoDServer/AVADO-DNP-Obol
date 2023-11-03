@@ -1,5 +1,5 @@
 #!/bin/bash
-NETWORK="prater"
+NETWORK="mainnet"
 DATA_PATH="/data/data-${NETWORK}/"
 mkdir -p ${DATA_PATH}
 

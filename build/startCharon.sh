@@ -13,7 +13,6 @@ if [ ! -f ${PRIVATE_KEY_FILE} ]; then
 fi
 
 CHARON_BEACON_NODE_ENDPOINTS="http://teku.my.ava.do:5051"
-#CHARON_BEACON_NODE_ENDPOINTS="http://209.35.77.243:50520"
 
 export CHARON_LOG_LEVEL=${CHARON_LOG_LEVEL:-info}
 export CHARON_LOG_FORMAT=${CHARON_LOG_FORMAT:-console}
@@ -29,6 +28,6 @@ until [ -f ${CLUSTER_LOCK} ]; do
     sleep 30
 done
 
-echo "Running: /usr/local/bin/charon run --lock-file ${CLUSTER_LOCK} --private-key-file=${PRIVATE_KEY_FILE} --beacon-node-endpoints=${CHARON_BEACON_NODE_ENDPOINTS} --monitoring-address=${CHARON_MONITORING_ADDRESS}  --builder-api"
+echo "Running: /usr/local/bin/charon run --lock-file=${CLUSTER_LOCK} --private-key-file=${PRIVATE_KEY_FILE} --beacon-node-endpoints=${CHARON_BEACON_NODE_ENDPOINTS} --monitoring-address=${CHARON_MONITORING_ADDRESS}  --builder-api"
 
-/usr/local/bin/charon run --lock-file ${CLUSTER_LOCK} --private-key-file=${PRIVATE_KEY_FILE} --beacon-node-endpoints=${CHARON_BEACON_NODE_ENDPOINTS} --monitoring-address=${CHARON_MONITORING_ADDRESS}  --builder-api
+/usr/local/bin/charon run --lock-file=${CLUSTER_LOCK} --private-key-file=${PRIVATE_KEY_FILE} --beacon-node-endpoints=${CHARON_BEACON_NODE_ENDPOINTS} --monitoring-address=${CHARON_MONITORING_ADDRESS}  --builder-api
