@@ -1,6 +1,6 @@
 {
   "name": "obol.avado.dappnode.eth",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "upstream": "v0.19.2",
   "autoupdate": true,
   "title": "Obol DVT",
