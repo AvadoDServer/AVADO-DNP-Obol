@@ -4,10 +4,10 @@ services:
     build:
       context: build
       args:
-        UPSTREAM_VERSION: v0.19.2
-        NIMBUS_VERSION: v24.2.2
-        TEKU_VERSION: 24.2.0
-    image: 'obol.avado.dappnode.eth:0.0.12'
+        UPSTREAM_VERSION: v1.0.0
+        NIMBUS_VERSION: v24.5.1
+        TEKU_VERSION: 24.6.1
+    image: 'obol.avado.dappnode.eth:0.0.13'
     restart: always
     volumes:
       - 'data:/data'
