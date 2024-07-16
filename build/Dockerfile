@@ -25,7 +25,7 @@ FROM --platform=linux/amd64 consensys/teku:${TEKU_VERSION} as teku
 
 ####### Main image
 
-FROM --platform=linux/amd64 node:18.15.0
+FROM --platform=linux/amd64 node:20.15.1
 
 COPY --from=charon /usr/local/bin/charon /usr/local/bin/charon
 # COPY --from=nimbus-bc /home/user/nimbus_beacon_node /usr/local/bin/nimbus_beacon_node
