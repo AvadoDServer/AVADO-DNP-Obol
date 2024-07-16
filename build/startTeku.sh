@@ -37,7 +37,8 @@ echo "exec /opt/teku/bin/teku validator-client \
   --validator-api-interface="0.0.0.0" \
   --validator-api-keystore-file=/opt/teku/avado.keystore \
   --validator-api-keystore-password-file=/opt/teku/keystorePasswordFile \
-  --validator-api-port=5052"
+  --validator-api-port=5052\
+  --validators-builder-registration-default-enabled=true"
 
 exec /opt/teku/bin/teku validator-client \
   --beacon-node-api-endpoint="http://localhost:3600" \
@@ -55,4 +56,5 @@ exec /opt/teku/bin/teku validator-client \
   --validator-api-keystore-password-file=/opt/teku/keystorePasswordFile \
   --validator-api-port=5052 \
   --validators-proposer-config=http://localhost:3600/teku_proposer_config \
-  --validators-proposer-blinded-blocks-enabled=true 
+  --validators-proposer-blinded-blocks-enabled=true \
+  --validators-builder-registration-default-enabled=true
